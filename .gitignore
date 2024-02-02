@@ -1,5 +1,2 @@
 node_modules
 bun.lockb
-asm2wasm-linux
-asm2wasm-macos
-asm2wasm-win.exe

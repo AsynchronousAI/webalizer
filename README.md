@@ -1,5 +1,5 @@
-# asm2wasm
-Intel Syntax Assembly to WebAssembly.
+# webalizer
+Assembly to WebAssembly.
 # Metadata:
 ## Story:
 Here at Unexex we believe in the Web and the power of WebAssembly. This tool can be used to port applications or commandlinetools to the web as a WebAssembly module.
@@ -11,12 +11,6 @@ Stable, not reccomended for production.
 ## Dependencies:
 - `pip install pybinaryen`
 - `pip install capstone`
-## Usage:
-- `pip install pybinaryen capstone`
-- `python3 asm2wasm/src <input_file> <options>`
-> **Options:**
-> - `-o <output_file>`: Output file name.
-> - `-t <WAT>`: Output WAT file.
 ## Using on Apple Silicon:
 ### Checking if you are on Apple Silicon:
 - Run `arch` in the terminal, if it returns `arm64`, you are on Apple Silicon.
@@ -29,5 +23,4 @@ The system is designed to work on x86_64, but it can be used on Apple Silicon us
 ## Converting compiled applications:
 You can use `objdump` to convert compiled applications to Intel Syntax Assembly:
 - `objdump -d myexec -M intel > myexec.asm`
-and then
-- `python3 asm2wasm/src myexec.asm -o myexec.wasm`
+and then put that through the tool.
