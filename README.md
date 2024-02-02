@@ -24,3 +24,16 @@ The system is designed to work on x86_64, but it can be used on Apple Silicon us
 You can use `objdump` to convert compiled applications to Intel Syntax Assembly:
 - `objdump -d myexec -M intel > myexec.asm`
 and then put that through the tool.
+# Credits:
+- [pybinaryen]
+- [capstone]
+- [EiNsTeiN-'s Decompiler](https://github.com/EiNSTeiN-/decompiler)
+***
+# Usage:
+```py
+import webalizer
+module = webalizer.assemble(source, arch)
+
+wat = module.text()
+wasm = module.binary()
+```
