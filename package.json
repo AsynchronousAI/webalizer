@@ -1,1 +1,0 @@
-{"name": "asm2wasm", "main": "src/index.js", "bin": "src/index.js", "scripts":{"build": "pkg . --targets node14-linux-x64,node14-macos-x64,node14-win-x64"}, "dependencies":{"@bytecodealliance/wizer":"^3.0.1","binaryen":"^116.0.0"}}
