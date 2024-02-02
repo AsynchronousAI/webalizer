@@ -1,5 +1,5 @@
 # webalizer
-Assembly to WebAssembly.
+Assembler that compiles to WebAssembly.
 # Metadata:
 ## Story:
 Here at Unexex we believe in the Web and the power of WebAssembly. This tool can be used to port applications or commandlinetools to the web as a WebAssembly module.
