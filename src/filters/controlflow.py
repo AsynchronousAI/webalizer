@@ -3,7 +3,7 @@
 Transforms the control flow into the most readable form possible.
 """
 
-import simplify_expressions
+from . import simplify_expressions
 import iterators
 
 from expressions import *

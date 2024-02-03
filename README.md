@@ -11,6 +11,7 @@ Stable, not reccomended for production.
 ## Dependencies:
 - `pip install pybinaryen`
 - `pip install capstone`
+- `pip install ply`
 ## Using on Apple Silicon:
 ### Checking if you are on Apple Silicon:
 - Run `arch` in the terminal, if it returns `arm64`, you are on Apple Silicon.

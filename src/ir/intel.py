@@ -5,7 +5,7 @@ from collections import namedtuple
 from expressions import *
 from statements import *
 
-from generic import ir_base
+from .generic import ir_base
 
 from . import *
 

@@ -1,2 +1,4 @@
 node_modules
 bun.lockb
+__pycache__
+*.pyc

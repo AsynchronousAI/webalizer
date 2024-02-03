@@ -1,7 +1,16 @@
 from capstone import *
-from .decompiler import *
-from .host import dis
-from .output import c
+
+import os
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    # avoids annoying package import issues
+    sys.path.append(current_dir)
+
+from decompiler import *
+from host import dis
+from output import c
+
 
 
 def assemble(code, arch):
