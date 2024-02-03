@@ -1,7 +1,7 @@
 from capstone import *
 
 import os
-import binaryen
+from . import binaryen
 import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
