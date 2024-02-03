@@ -1,26 +1,25 @@
 from capstone import *
 
 import os
+import binaryen
 import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     # avoids annoying package import issues
     sys.path.append(current_dir)
 
-from decompiler import *
-from host import dis
-from output import c
-
 
 
 def assemble(code, arch):
     md = Cs(*archs[arch])
+    instructs = []
+    for i in md.disasm(code, 0x1000):
+        instructs.append({"address": i.address, "mnemonic": i.mnemonic, "op_str": i.op_str})
+        print("0x%x:\t%s\t%s" %(i.address, i.mnemonic, i.op_str))
 
-    disasm = dis.available_disassemblers['capstone'].create(md, code, 0x1000)
-    dec = decompiler_t(disasm, 0x1000)
+    module = binaryen.ModuleCreate()
 
-    dec.step_until(step_decompiled)
-    return (''.join([str(o) for o in c.tokenizer(dec.function).tokens]))
+    return module
 
 archs = {
     "x86": [CS_ARCH_X86, CS_MODE_32],
