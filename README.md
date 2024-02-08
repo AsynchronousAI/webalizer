@@ -27,6 +27,21 @@ var module = webalizer(buffer, offset, arch)
 
 console.log(module.emitText()); // Output WAT
 ```
+```js
+import webalizer from "./src/index.js";
+
+var buffer = `
+inc   rax;
+call  0x10040;
+mov   rax, qword ptr[rdx + 4];
+sub   esp, 0x100;
+pop   rbx;
+` // Intel syntax ASM is supported as a buffer.
+var offset = 0x10000;
+
+console.log(webalizer(buffer, offset, "x64").emitText());
+```
+
 ## Installing Dependencies:
 - `npm i`
 # Internals:
