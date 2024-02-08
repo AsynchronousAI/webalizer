@@ -1,0 +1,15 @@
+{
+  "name": "webalizer",
+  "version": "1.0.0",
+  "description": "Dissasembler that compiles to webassembly",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aarav Sethi",
+  "license": "MIT",
+  "dependencies": {
+    "@alexaltea/capstone-js": "^3.0.5",
+    "binaryen": "^116.0.0"
+  }
+}
