@@ -11,6 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@alexaltea/capstone-js": "^3.0.5",
-    "binaryen": "^116.0.0"
+    "binaryen": "^116.0.0",
+    "keystonejs": "github:alexaltea/keystone.js"
   }
 }
