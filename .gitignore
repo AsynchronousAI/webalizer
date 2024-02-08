@@ -2,3 +2,4 @@ node_modules
 bun.lockb
 src/__pycache__
 *.pyc
+test.js

@@ -2,9 +2,10 @@
   "name": "webalizer",
   "version": "1.0.0",
   "description": "Dissasembler that compiles to webassembly",
-  "main": "index.js",
+  "main": "src/index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test.js"
   },
   "author": "Aarav Sethi",
   "license": "MIT",

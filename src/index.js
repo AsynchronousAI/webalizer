@@ -1,24 +1,44 @@
 import binaryen from "binaryen";
 var cs = require("@alexaltea/capstone-js/dist/capstone.min.js");
 
-// Input: Machine code bytes and offset where they are located
-var buffer = [0x55, 0x31, 0xD2, 0x89, 0xE5, 0x8B, 0x45, 0x08];
-var offset = 0x10000;
+import {init, omit, finish} from "./omitter.js";
 
-// Initialize the decoder
-var d = new cs.Capstone(cs.ARCH_X86, cs.MODE_32);
+export default function webalizer(buffer, offset, arch){
+    var arch1, mode1;
+    if (arch === "x86"){
+        arch1 = cs.ARCH_X86;
+        mode1 = cs.MODE_32;
+    } else if (arch === "x64"){
+        arch1 = cs.ARCH_X86;
+        mode1 = cs.MODE_64;
+    } else if (arch === "arm"){
+        arch1 = cs.ARCH_ARM;
+        mode1 = cs.MODE_ARM;
+    } else if (arch === "arm64"){
+        arch1 = cs.ARCH_ARM64;
+        mode1 = cs.MODE_ARM;
+    }
 
-// Output: Array of cs.Instruction objects
-var instructions = d.disasm(buffer, offset);
+    var d = new cs.Capstone(arch1, mode1);
 
-// Display results;
-instructions.forEach(function (instr) {
-    console.log("0x%s:\t%s\t%s",
-        instr.address.toString(16),
-        instr.mnemonic,
-        instr.op_str
-    );
-});
+    var instructions = d.disasm(buffer, offset);
 
-// Delete decoder
-d.close();
+    const module = new binaryen.Module();
+
+    init(module);
+
+    instructions.forEach(function (instr) {
+        omit(instr, module);
+        console.log("0x%s:\t%s\t%s",
+            instr.address.toString(16),
+            instr.mnemonic,
+            instr.op_str
+        );
+    });
+
+    finish(module);
+
+    module.optimize();
+
+    return module;
+}

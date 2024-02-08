@@ -7,43 +7,28 @@ Here at Unexex we believe in the Web and the power of WebAssembly. This tool can
 Stable, not reccomended for production.
 ### Unsupported:
 - System calls, planned to be bindable to JavaScript.
-- Windows.
 # Installation:
 ## Dependencies:
 - capstone
-- wasmtime
+- binaryen
 ***
 # Usage:
-```py
-import webalizer
-module = webalizer.assemble(source, arch) # Returns a pybinaryen module
-module.ModuleOptimize() # Optimizes the module
+```js
+import webalizer from "./src/index.js";
+
+var buffer = [0x55, 0x31, 0xD2, 0x89, 0xE5, 0x8B, 0x45, 0x08];
+var offset = 0x10000;
+var arch = "x86";
+
+var module = webalizer(buffer, offset, arch)
+
+console.log(module.emitText()); // Output WAT
 ```
 ## Installing Dependencies:
-- `pip install capstone wasmtime`
-- Homebrew (macOS)
-- apt-get (Linux)
-- choco (Windows)
-## Installing Binaryen:
-Binaryen is required to compile to WebAssembly and optimize the module.
-### macOS & Linux:
-- Download the correct version from`https://github.com/WebAssembly/binaryen/releases`
-- Move `include` to `/usr/local/include`
-- Move conents of `lib` to `/usr/local/lib`
-- Move conents of `bin` to `/usr/local/bin`
-### Windows:
-- Download the windows version from `https://github.com/WebAssembly/binaryen/releases`
-- Add the `bin` folder to the PATH
-- Add the `include` folder to the include path
-- Add the `lib` folder to the library path
-## Installing Capstone (Apple Silicon only):
-The system works on x86_64 out of the box, but it can be used on Apple Silicon using the following steps:
-- Uninstall `capstone` if it is installed: `pip uninstall capstone`
-- Install `capstone` using homebrew: `arch -arm64 brew install capstone`
-- Reinstall capstone, force it to use the Apple Silicon variant: `pip install --no-cache-dir --global-option=build_ext --global-option="-L/opt/homebrew/lib" --global-option="-I/opt/homebrew/include" capstone`
+- `npm i`
 # Internals:
 ## Binaryen:
-This tool is written in python and uses `binaryen` javascript library via compiling it to WASM and using `wasmtime`.
+This tool uses binaryen to generate WASM, WAT and other formats and optimize.
 ## Parser:
 The parser is written in python and uses `capstone` to disassemble the source code, capstone returns a list of instructions which are then put through a visitor pattern to generate the WebAssembly module.
 ## Visitor:
@@ -54,7 +39,7 @@ WebAssembly does not support goto's, so we implemented a `chunk` system, where e
 ```c
 int a = 0;
 if (a == 0) {
-goto end;
+  goto end;
 }
 a = 1;
 end:
@@ -75,10 +60,8 @@ int chunk2() {
 ```
 This example is just an example, the actual implementation is more complicated.
 ### Memory:
-For the instructions the memory is stored natively in WASM, all data is stored as a f64.
-
+Like ASM, we allocate a chunk of memory and use a stack to store variables.
 ## Optimizer:
 The optimization process is:
-- Put the decompiled assembly through our own optimizer (planned)
 - Use `wizer`
 - Use `wasm-opt`
