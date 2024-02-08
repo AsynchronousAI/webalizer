@@ -11,6 +11,9 @@ Stable, not reccomended for production.
 ## Dependencies:
 - capstone
 - binaryen
+## Credits:
+- @AlexAltea for capstone.js (dependency) and keystone.js (modified in source).
+- AssemblyScript for Binaryen.js (dependency).
 ***
 # Usage:
 ```js

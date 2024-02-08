@@ -1,7 +1,7 @@
 /* dependencies */
 import binaryen from "binaryen";
 var cs = require("@alexaltea/capstone-js/dist/capstone.min.js");
-var ks = require("keystonejs/dist/keystone.min.js");
+var ks = require("./keystone.min.js");
 
 /* core */
 import {init, omit, finish} from "./omitter.js";
@@ -40,7 +40,13 @@ export default function webalizer(buffer, offset, arch){
     /** If we are provided Assembly compile */
     if (typeof buffer === "string"){
         var ks1 = new ks.Keystone(arch2, mode2);
+        ks1.option(ks.OPT_SYNTAX, ks.OPT_SYNTAX_INTEL);
         buffer = ks1.asm(buffer);
+        if (buffer.failed){
+            console.error("Failed to compile assembly.");
+            return;
+        }
+        buffer = buffer.mc;
         ks1.close();
     }
     var d = new cs.Capstone(arch1, mode1);
