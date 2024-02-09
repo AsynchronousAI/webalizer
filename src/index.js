@@ -1,3 +1,9 @@
+/*
+** index.js
+** Primary interface for the webalizer.
+** Aarav Sethi
+*/
+
 /* dependencies */
 import binaryen from "binaryen";
 var cs = require("@alexaltea/capstone-js/dist/capstone.min.js");
@@ -15,22 +21,6 @@ export default function webalizer(buffer, offset, arch){
 
     arch2 = ks.ARCH_X86;
     mode2 = ks.MODE_32;
-    /*} else if (arch === "x64"){
-        arch1 = cs.ARCH_X86;
-        mode1 = cs.MODE_64;
-
-        arch2 = ks.ARCH_X86;
-        mode2 = ks.MODE_64;
-    } else if (arch === "arm"){
-        arch1 = cs.ARCH_ARM;
-        mode1 = cs.MODE_ARM;
-
-        arch2 = ks.ARCH_ARM;
-        mode2 = ks.MODE_ARM;
-    } else {
-        console.error("Invalid architecture: " + arch);
-        return new binaryen.Module();
-    }*/
 
     /* Disassemble */
     /** If we are provided Assembly compile */
@@ -48,9 +38,10 @@ export default function webalizer(buffer, offset, arch){
     var d = new cs.Capstone(arch1, mode1);
     var instructions = d.disasm(buffer, offset);
 
-    /* Begin compilation */
+    /* Start instance */
     const module = new binaryen.Module();
 
+    /* Compile */
     init(module, arch); // adds initializers 
     module.addFunction("main", binaryen.none, binaryen.none, binaryen.none, 
         module.block(null, instructions.map(function (instr) {
@@ -64,7 +55,7 @@ export default function webalizer(buffer, offset, arch){
     )));
     finish(module); // adds exports
 
-    /* clean */
+    /* Clean */
     d.close(); // close capstone to 
 
     /* Validate and optimize */
