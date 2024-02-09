@@ -9,14 +9,13 @@ import {init, omit, finish} from "./omitter.js";
 /* Binary -> WebAssembly */
 export default function webalizer(buffer, offset, arch){
     /* Convert architecture to capstone constants */
-    var arch1, mode1, arch2, mode2;
-    if (arch === "x86"){
-        arch1 = cs.ARCH_X86;
-        mode1 = cs.MODE_32;
+    var arch1, mode1, arch2, mode2; /* x86 */
+    arch1 = cs.ARCH_X86;
+    mode1 = cs.MODE_32;
 
-        arch2 = ks.ARCH_X86;
-        mode2 = ks.MODE_32;
-    } else if (arch === "x64"){
+    arch2 = ks.ARCH_X86;
+    mode2 = ks.MODE_32;
+    /*} else if (arch === "x64"){
         arch1 = cs.ARCH_X86;
         mode1 = cs.MODE_64;
 
@@ -28,13 +27,10 @@ export default function webalizer(buffer, offset, arch){
 
         arch2 = ks.ARCH_ARM;
         mode2 = ks.MODE_ARM;
-    } else if (arch === "arm64"){
-        arch1 = cs.ARCH_ARM64;
-        mode1 = cs.MODE_ARM;
-
-        arch2 = ks.ARCH_ARM64;
-        mode2 = ks.MODE_ARM;
-    }
+    } else {
+        console.error("Invalid architecture: " + arch);
+        return new binaryen.Module();
+    }*/
 
     /* Disassemble */
     /** If we are provided Assembly compile */
@@ -44,7 +40,7 @@ export default function webalizer(buffer, offset, arch){
         buffer = ks1.asm(buffer);
         if (buffer.failed){
             console.error("Failed to compile assembly.");
-            return;
+            return new binaryen.Module();
         }
         buffer = buffer.mc;
         ks1.close();
@@ -55,7 +51,7 @@ export default function webalizer(buffer, offset, arch){
     /* Begin compilation */
     const module = new binaryen.Module();
 
-    init(module); // adds initializers 
+    init(module, arch); // adds initializers 
     module.addFunction("main", binaryen.none, binaryen.none, binaryen.none, 
         module.block(null, instructions.map(function (instr) {
             console.log("0x%s:\t%s\t%s",
@@ -63,7 +59,7 @@ export default function webalizer(buffer, offset, arch){
                 instr.mnemonic,
                 instr.op_str
             );
-            return omit(instr, module);
+            return omit(instr, module, arch);
         }
     )));
     finish(module); // adds exports
@@ -74,7 +70,7 @@ export default function webalizer(buffer, offset, arch){
     /* Validate and optimize */
     try {
         module.validate();
-        module.optimize();
+       // module.optimize();
     } catch (e){
         console.warn("Generated code may be faulty, failed to validate and optimize: " + e); // warn user, and provide error
     }

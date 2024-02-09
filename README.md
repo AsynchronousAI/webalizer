@@ -21,9 +21,8 @@ import webalizer from "./src/index.js";
 
 var buffer = [0x55, 0x31, 0xD2, 0x89, 0xE5, 0x8B, 0x45, 0x08];
 var offset = 0x10000;
-var arch = "x86";
 
-var module = webalizer(buffer, offset, arch)
+var module = webalizer(buffer, offset)
 
 console.log(module.emitText()); // Output WAT
 ```
@@ -36,10 +35,10 @@ call  0x10040;
 mov   rax, qword ptr[rdx + 4];
 sub   esp, 0x100;
 pop   rbx;
-` // Intel syntax ASM is supported as a buffer.
+` // x86 intel syntax is supported as a buffer.
 var offset = 0x10000;
 
-console.log(webalizer(buffer, offset, "x64").emitText());
+console.log(webalizer(buffer, offset).emitText());
 ```
 
 ## Installing Dependencies:
