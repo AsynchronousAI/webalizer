@@ -10,10 +10,10 @@ var cs = require("@alexaltea/capstone-js/dist/capstone.min.js");
 var ks = require("./keystone.min.js");
 
 /* core */
-import {init, omit, finish} from "./omitter.js";
+import {init, omit, finish, finishFuncs} from "./omitter.js";
 
 /* Binary -> WebAssembly */
-export default function webalizer(buffer, offset, arch){
+export default function webalizer(buffer, offset, arch, inturrupt = false){
     /* Convert architecture to capstone constants */
     var arch1, mode1, arch2, mode2; /* x86 */
     arch1 = cs.ARCH_X86;
@@ -42,16 +42,16 @@ export default function webalizer(buffer, offset, arch){
     const module = new binaryen.Module();
 
     /* Compile */
-    init(module, arch); // adds initializers 
-    module.addFunction("main", binaryen.none, binaryen.none, binaryen.none, 
+    init(module, arch, inturrupt); // adds initializers 
+    module.addFunction("main", binaryen.none, binaryen.i32, binaryen.none, 
         module.block(null, instructions.map(function (instr) {
             console.log("0x%s:\t%s\t%s",
                 instr.address.toString(16),
                 instr.mnemonic,
                 instr.op_str
             );
-            return omit(instr, module, arch);
-        }
+            return omit(instr, module, arch, inturrupt);
+        }).concat(finishFuncs(module)
     )));
     finish(module); // adds exports
 
@@ -61,7 +61,7 @@ export default function webalizer(buffer, offset, arch){
     /* Validate and optimize */
     try {
         module.validate();
-       // module.optimize();
+        module.optimize();
     } catch (e){
         console.warn("Generated code may be faulty, failed to validate and optimize: " + e); // warn user, and provide error
     }

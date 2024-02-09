@@ -13,10 +13,11 @@ const instructions = {
 
         return module.global.set(operands[0], asmValue(module, operands[1]));
     },
-    "int": function(instr, module){ /* system call */
-        return module.unreachable();
+    "int": function(instr, module, inturrupt){ /* system call */
+        if (!inturrupt) throw new Error("Inturrupt mode is off.");
+        return module.call("inturrupt", [asmValue(module, instr.op_str)]);
     },
-    "xor": function(instr, module){ /* 'xor' only supports xor'ing two registers or immediate values */
+    "xor": function(instr, module){ /* 'xor' only supports xor'ing two registers or immediate values */ // TODO: fix
         const operands = args(instr);
     
         return module.global.set(operands[0], module.i32.xor(asmValue(module, operands[0]), asmValue(module, operands[1])));
