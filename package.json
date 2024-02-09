@@ -11,6 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@alexaltea/capstone-js": "^3.0.5",
-    "binaryen": "^116.0.0"
+    "binaryen": "^116.0.0",
+    "cli-progress": "^3.12.0",
+    "log-symbols": "^6.0.0"
   }
 }
