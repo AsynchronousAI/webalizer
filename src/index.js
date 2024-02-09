@@ -51,7 +51,12 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
     const module = new binaryen.Module();
 
     /* Compile */
-    const bar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+    const bar = new cliProgress.SingleBar({
+            format: '- {bar} {percentage}% | {value}/{total} instructions',
+            barCompleteChar: '\u2588',
+            barIncompleteChar: '\u2591',
+            hideCursor: true
+        }, cliProgress.Presets.legacy);
     bar.start(instructions.length, 0);
 
     init(module, arch, inturrupt); // adds initializers 
@@ -62,7 +67,7 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
                 instr.mnemonic,
                 instr.op_str
             );*/
-            bar.update(1);
+            bar.increment();
             return omit(instr, module, arch, inturrupt);
         }).concat(finishFuncs(module)
     )));
