@@ -43,42 +43,47 @@ console.log(webalizer(buffer, offset).emitText());
 
 ## Installing Dependencies:
 - `npm i`
-# Internals:
-## Binaryen:
-This tool uses binaryen to generate WASM, WAT and other formats and optimize.
-## Parser:
-The parser is written in python and uses `capstone` to disassemble the source code, capstone returns a list of instructions which are then put through a visitor pattern to generate the WebAssembly module.
-## Visitor:
-The visitor is the biggest part of the tool, it takes the disassembled instructions and turns it into a Binaryen AST to be compiled into WebAssembly.
-### Goto's:
-WebAssembly does not support goto's, so we implemented a `chunk` system, where each chunk is a block of code that can be jumped to.
-#### Example (pseudo code):
-```c
-int a = 0;
-if (a == 0) {
-  goto end;
-}
-a = 1;
-end:
-return a;
-```
-This will be chunked into:
-```c
-int chunk1() {
-    int a = 0;
-    if (a == 0) {
-        return chunk2();
-    }
-    a = 1;
-}
-int chunk2() {
-  return a;
-}
-```
-This example is just an example, the actual implementation is more complicated.
-### Memory:
-Like ASM, we allocate a chunk of memory and use a stack to store variables.
-## Optimizer:
-The optimization process is:
-- Use `wizer`
-- Use `wasm-opt`
+
+# Architecture:
+## Files & Control Flow:
+### `src/index.js` - Main entry point.
+- Take in a buffer, and an offset.
+- If buffer is a string, compile it to a buffer using Keystone.
+- Take the buffer and the offset and convert it to a list using Capstone.
+- Create a main function for binaryen.
+- Add the initial commands.
+- Use omitter to visit instructions and add them to the main function.
+- Add the return commands.
+- Return the module.
+### `src/omitter.js` - Omitter.
+- Take in a instruction and arguments.
+- Use `instructions.js` to return Binaryen instructions.
+- Expose functions for initializing and finishing the module.
+### `src/ommiterfuncs.js` - Omitter functions.
+Functions used in the ommiter and in instructions, for example compiling an ASM Register to a WASM Local Index.
+### `src/instructions.js` - Instructions.
+- Take in a instruction and arguments.
+- Return a Binaryen instruction depending on the instruction and arguments.
+### `src/data.js` - Datas.
+Holds constant data, for example the register names.
+### 'src/keystone.min.js' - Keystone.
+A modified version of keystone.js. Large file, do not directly modify.
+
+## Instructions:
+### mov
+Gets local index and value, and sets the local index to the value.
+### add
+Adds two local indexes together and sets the first local index to the result.
+### sub
+Subtracts the second local index from the first local index and sets the first local index to the result.
+### cmp
+Set the global `pass` to if the first local index is equal to the second local index.
+### je
+If the global `pass` is true, jump to the argument. Read `goto` for Goto implementation.
+### jne
+If the global `pass` is false, jump to the argument. Read `goto` for Goto implementation.
+### jmp
+Jump to the argument. Read `goto` for Goto implementation.
+
+## Goto:
+Since WASM does not support goto's we use a loop and a conditional to simulate a goto.

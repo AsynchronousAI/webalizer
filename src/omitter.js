@@ -19,7 +19,7 @@ export function init(module, arch, inturrupt){ /* before main */
     if (inturrupt) module.addFunctionImport("inturrupt", "inturrupt", "inturrupt", binaryen.i32, binaryen.none);
 
     module.setMemory(1, 1, false, false, false, false, "memory");
-    module.addGlobal("sp", binaryen.i32, true, module.i32.const(0));
+    module.addGlobal("pass", binaryen.i32, 1, module.i32.const(0));
 }
 export function finish(module){ /* after main */
     module.addFunctionExport("main", "main");
