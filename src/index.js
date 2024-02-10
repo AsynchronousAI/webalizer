@@ -7,6 +7,7 @@
 /* dependencies */
 import binaryen from "binaryen";
 import logSymbols from 'log-symbols';
+import data from "./data.js";
 
 var cs = require("@alexaltea/capstone-js/dist/capstone.min.js");
 var ks = require("./keystone.min.js");
@@ -14,7 +15,7 @@ var ks = require("./keystone.min.js");
 const cliProgress = require('cli-progress');
 
 /* core */
-import {init, omit, finish, finishFuncs} from "./omitter.js";
+import {init, omit, finish, finishFuncs, initFuncs} from "./omitter.js";
 
 /* Binary -> WebAssembly */
 export default function webalizer(buffer, offset, arch, inturrupt = false){
@@ -60,10 +61,17 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
             hideCursor: true
         }, cliProgress.Presets.legacy);
     bar.start(instructions.length, 0);
+    
+    /** Registers -> WASM Locals */
+    var types = []
+    for (var i = 0; i < data.registers.length; i++){
+        types.push(binaryen.i32);
+    }
 
+    /** Main */
     init(module, arch, inturrupt); // adds initializers 
-    module.addFunction("main", binaryen.none, binaryen.i32, binaryen.none, 
-        module.block(null, instructions.map(function (instr) {
+    module.addFunction("main", binaryen.none, binaryen.i32, types, 
+        module.block(null, initFuncs(module).concat(instructions.map(function (instr) {
             /*console.log("0x%s:\t%s\t%s",
                 instr.address.toString(16),
                 instr.mnemonic,
@@ -71,8 +79,8 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
             );*/
             bar.increment();
             return omit(instr, module, arch, inturrupt);
-        }).concat(finishFuncs(module)
-    )));
+        }).concat(finishFuncs(module))
+        )));
     finish(module); // adds exports
 
     /* Clean */
@@ -82,7 +90,6 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
     /* Validate and optimize */
     try {
         module.validate();
-        module.optimize();
     } catch (e){
         console.log(logSymbols.error, "failed to validate and optimize"); // warn user, and provide error
     }

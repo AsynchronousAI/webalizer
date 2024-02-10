@@ -6,32 +6,30 @@
 
 import binaryen from "binaryen";
 import instructions from "./instructions.js";
+import data from "./data.js";
 
 export function omit(instr, module, arch, inturrupt){
     if (instr.mnemonic in instructions){
         return instructions[instr.mnemonic](instr, module, inturrupt);
     }
-    console.warn("Instruction '" + instr.mnemonic + "' not implemented.");
-    return module.unreachable();
+    throw new Error("Instruction not implemented: " + instr.mnemonic);
 }
-export function init(module, arch, inturrupt){
+export function init(module, arch, inturrupt){ /* before main */
     if (inturrupt) module.addFunctionImport("inturrupt", "inturrupt", "inturrupt", binaryen.i32, binaryen.none);
 
-    /* stack */
     module.setMemory(1, 1, false, false, false, false, "memory");
     module.addGlobal("sp", binaryen.i32, true, module.i32.const(0));
-
-    /* define registers */
-    module.addGlobal("eax", binaryen.i32, true, module.i32.const(0));
-    module.addGlobal("ebx", binaryen.i32, true, module.i32.const(0));
-    module.addGlobal("ecx", binaryen.i32, true, module.i32.const(0));
-    module.addGlobal("edx", binaryen.i32, true, module.i32.const(0));
-
-    /* useful functions */
 }
-export function finish(module){
+export function finish(module){ /* after main */
     module.addFunctionExport("main", "main");
 }
-export function finishFuncs(module){
+export function finishFuncs(module){ /* in main */
     return [module.return(module.i32.const(0))]; // TODO: return eax
+}
+export function initFuncs(module, arch, inturrupt){ /* in main */
+    var i = 0;
+    return data.registers.map(function (){
+        i++;
+        return module.local.set(i-1, module.i32.const(0));
+    })
 }
