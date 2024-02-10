@@ -51,8 +51,10 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
     const module = new binaryen.Module();
 
     /* Compile */
+    console.log(logSymbols.success, "Compiling instructions...");
+    
     const bar = new cliProgress.SingleBar({
-            format: '- {bar} {percentage}% | {value}/{total} instructions',
+            format: '{bar} {percentage}% | {value}/{total} instructions',
             barCompleteChar: '\u2588',
             barIncompleteChar: '\u2591',
             hideCursor: true
