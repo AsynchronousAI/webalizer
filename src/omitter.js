@@ -7,6 +7,7 @@
 import binaryen from "binaryen";
 import instructions from "./instructions.js";
 import data from "./data.js";
+import omitterfuncs from "./omitterfuncs.js";
 
 export function omit(instr, module, arch, inturrupt){
     if (instr.mnemonic in instructions){
@@ -24,7 +25,7 @@ export function finish(module){ /* after main */
     module.addFunctionExport("main", "main");
 }
 export function finishFuncs(module){ /* in main */
-    return [module.return(module.i32.const(0))]; // TODO: return eax
+    return [module.return(module.local.get(omitterfuncs.regNameToLocalIndex("eax"), binaryen.i32))];
 }
 export function initFuncs(module, arch, inturrupt){ /* in main */
     var i = 0;

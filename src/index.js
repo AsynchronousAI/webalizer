@@ -90,6 +90,7 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
     /* Validate and optimize */
     try {
         module.validate();
+        module.optimize();
     } catch (e){
         console.log(logSymbols.error, "failed to validate and optimize"); // warn user, and provide error
     }
