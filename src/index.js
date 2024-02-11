@@ -5,9 +5,10 @@
 */
 
 /* dependencies */
+import logSymbols from 'log-symbols'; console.log(logSymbols.success, "Initializing...");
 import binaryen from "binaryen";
-import logSymbols from 'log-symbols';
 import data from "./data.js";
+import goto from "./goto.js";
 
 var cs = require("@alexaltea/capstone-js/dist/capstone.min.js");
 var ks = require("./keystone.min.js");
@@ -36,7 +37,7 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
         ks1.option(ks.OPT_SYNTAX, ks.OPT_SYNTAX_INTEL);
         buffer = ks1.asm(buffer);
         if (buffer.failed){
-            console.error(logSymbols.error, "Failed to compile assembly.");
+            console.error(logSymbols.error, "Failed to compile assembly to binary.");
             return new binaryen.Module();
         }
         buffer = buffer.mc;
@@ -71,16 +72,15 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
     /** Main */
     init(module, arch, inturrupt); // adds initializers 
     module.addFunction("main", binaryen.none, binaryen.i32, types, 
-        module.block(null, initFuncs(module).concat(instructions.map(function (instr) {
-            /*console.log("0x%s:\t%s\t%s",
-                instr.address.toString(16),
-                instr.mnemonic,
-                instr.op_str
-            );*/
-            bar.increment();
-            return omit(instr, module, arch, inturrupt);
-        }).concat(finishFuncs(module))
-        )));
+        goto.gotoBlock(module, initFuncs(module).concat(
+            instructions.map(function (instr) {
+                bar.increment();
+                return omit(instr, module, arch, inturrupt);
+            }).concat(
+                finishFuncs(module)
+            )
+        ))
+    );
     finish(module); // adds exports
 
     /* Clean */
