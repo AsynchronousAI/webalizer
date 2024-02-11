@@ -45,11 +45,11 @@ const instructions = {
     },
     "or": function(instr, module){ /* or */
         const operands = args(instr);
-        return module.local.set(regNameToLocalIndex(operands[0]), module.i32.or(module.local.get(regNameToLocalIndex(operands[0]), binaryen.i32), asmValue(module, operands[1]));
+        return module.local.set(regNameToLocalIndex(operands[0]), module.i32.or(module.local.get(regNameToLocalIndex(operands[0]), binaryen.i32), asmValue(module, operands[1])));
     },
     "xor": function(instr, module){ /* xor */
         const operands = args(instr);
-        return module.local.set(regNameToLocalIndex(operands[0]), module.i32.xor(module.local.get(regNameToLocalIndex(operands[0]), binaryen.i32), asmValue(module, operands[1]));
+        return module.local.set(regNameToLocalIndex(operands[0]), module.i32.xor(module.local.get(regNameToLocalIndex(operands[0]), binaryen.i32), asmValue(module, operands[1])));
     },
     "lea": function(instr, module){ /* load effective address */
         const operands = args(instr);
