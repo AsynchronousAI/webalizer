@@ -19,7 +19,7 @@ const cliProgress = require('cli-progress');
 import {init, omit, finish, finishFuncs, initFuncs} from "./omitter.js";
 
 /* Binary -> WebAssembly */
-export default function webalizer(buffer, offset, arch, inturrupt = false){
+export default function webalizer(buffer, offset, arch, inturrupt = false, mem = false){
     /* Convert architecture to capstone constants */
     var arch1, mode1, arch2, mode2; /* x86 */
     arch1 = cs.ARCH_X86;
@@ -46,6 +46,7 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
 
     console.log(logSymbols.success, "Disassembling binary...");
     var d = new cs.Capstone(arch1, mode1);
+
     var instructions = d.disasm(buffer, offset);
 
     /* Start instance */
@@ -80,12 +81,12 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
     /** Main */
     bar.start(instructions.length, 0); // start progress bar
 
-    init(module, arch, inturrupt); // adds initializers 
+    init(module, arch, inturrupt, mem); // adds initializers 
     module.addFunction("main", binaryen.none, binaryen.i32, types, 
         goto.gotoBlock(module, initFuncs(module).concat(
             instructions.map(function (instr) {
                 bar.increment();
-                return omit(instr, module, arch, inturrupt);
+                return omit(instr, module, arch, inturrupt, mem);
             }).concat(
                 finishFuncs(module)
             )
