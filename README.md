@@ -43,6 +43,13 @@ console.log(webalizer(buffer, offset).emitText());
 
 ## Installing Dependencies:
 - `npm i`
+# TODO:
+- Goto
+- Memory stack
+- Memory values `[]`
+- Support subtraction and addition syntax
+- Support for all x86 instructions
+- Support for all x86 registers
 
 # Architecture:
 ## Files & Control Flow:
