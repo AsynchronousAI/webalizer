@@ -25,7 +25,7 @@ export function finish(module){ /* after main */
     module.addFunctionExport("main", "main");
 }
 export function finishFuncs(module){ /* in main */
-    return [module.return(module.local.get(omitterfuncs.regNameToLocalIndex("eax"), binaryen.i32))];
+    return [module.return(module.local.get(omitterfuncs.regNameToLocalIndex("edi"), binaryen.i32))];
 }
 export function initFuncs(module, arch, inturrupt){ /* in main */
     var i = 0;

@@ -47,10 +47,27 @@ console.log(webalizer(buffer, offset).emitText());
 - Goto
 - Memory stack
 - Memory values `[]`
-- Support subtraction and addition syntax
 - Support for all x86 instructions
 - Support for all x86 registers
+- Functions
+- Static data
 
+# Errors:
+## `local.get index must be small enough`
+```
+[wasm-validator error in function main] unexpected false: local.get index must be small enough, on 
+(local.get $4294967295)
+[wasm-validator error in function main] unexpected false: local.set index must be small enough, on 
+(local.set $4294967295
+ (local.get $4294967295)
+)
+Aborted(Assertion failed: index < base + vars.size(), at: /home/runner/work/binaryen.js/binaryen.js/binaryen/src/wasm/wasm.cpp,1314,isVar)
+```
+This error means that you are using an unsupported register that has not been mapped, resulting in the index being the maximum value of a 32 bit integer.
+## `RuntimeError: Aborted(Assertion failed: *currp, at: /home/runner/work/binaryen.js/binaryen.js/binaryen/src/wasm-traversal.h,313,pushTask). Build with -sASSERTIONS for more info.`
+This is an internal error where generated WASM code is invalid, and should be reported to the issue tracker.
+## `error: Capstone.js: Function cs_disasm failed with code 0: OK (CS_ERR_OK)`
+This error means that the buffer is not a Uint8Array or a ASM string, and should be converted to one. This can be done using `new Uint8Array(buffer)`.
 # Architecture:
 ## Files & Control Flow:
 ### `src/index.js` - Main entry point.
@@ -75,22 +92,6 @@ Functions used in the ommiter and in instructions, for example compiling an ASM 
 Holds constant data, for example the register names.
 ### 'src/keystone.min.js' - Keystone.
 A modified version of keystone.js. Large file, do not directly modify.
-
-## Instructions:
-### mov
-Gets local index and value, and sets the local index to the value.
-### add
-Adds two local indexes together and sets the first local index to the result.
-### sub
-Subtracts the second local index from the first local index and sets the first local index to the result.
-### cmp
-Set the global `pass` to if the first local index is equal to the second local index.
-### je
-If the global `pass` is true, jump to the argument. Read `goto` for Goto implementation.
-### jne
-If the global `pass` is false, jump to the argument. Read `goto` for Goto implementation.
-### jmp
-Jump to the argument. Read `goto` for Goto implementation.
 
 ## Goto:
 Since WASM does not support goto's we use a loop and a conditional to simulate a goto.

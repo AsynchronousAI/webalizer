@@ -61,7 +61,6 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
             barIncompleteChar: '\u2591',
             hideCursor: true
         }, cliProgress.Presets.legacy);
-    bar.start(instructions.length, 0);
     
     /** Registers -> WASM Locals */
     var types = []
@@ -69,7 +68,18 @@ export default function webalizer(buffer, offset, arch, inturrupt = false){
         types.push(binaryen.i32);
     }
 
+    /** Log */
+    instructions.forEach(function (instr) {
+        console.log("0x%s:\t%s\t%s",
+            instr.address.toString(16),
+            instr.mnemonic,
+            instr.op_str
+        );
+    });
+
     /** Main */
+    bar.start(instructions.length, 0); // start progress bar
+
     init(module, arch, inturrupt); // adds initializers 
     module.addFunction("main", binaryen.none, binaryen.i32, types, 
         goto.gotoBlock(module, initFuncs(module).concat(
