@@ -7,6 +7,7 @@
 import binaryen from "binaryen";
 import instructions from "./instructions.js";
 import data from "./data.js";
+import stackInit from "./stack.js";
 import omitterfuncs from "./omitterfuncs.js";
 
 export function omit(instr, module, arch, inturrupt, mem){
@@ -17,7 +18,7 @@ export function omit(instr, module, arch, inturrupt, mem){
 }
 export function init(module, arch, inturrupt, mem){ /* before main */
     if (inturrupt) module.addFunctionImport("inturrupt", "inturrupt", "inturrupt", binaryen.i32, binaryen.none);
-    if (mem) module.addFunctionImport("memory", "memory", "memory", binaryen.i32, binaryen.none); module.setMemory(1, 1, false, false, false, false, "memory");
+    stackInit(module);
     module.addGlobal("pass", binaryen.i32, 1, module.i32.const(0));
 }
 export function finish(module){ /* after main */

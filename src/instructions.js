@@ -69,6 +69,17 @@ const instructions = {
     "jne": function(instr, module){ /* jump if not equal */
         return module.if(module.i32.ne(module.global.get("pass", binaryen.i32), module.i32.const(0)), goto.goto(module, instr.op_str));
     },
+
+    /* stack */
+    "push": function(instr, module){ /* push, use `$memory` WASM memory */
+        return module.call("push", [asmValue(module, instr.op_str)]);
+    },
+    "pop": function(instr, module){ /* pop, use `$memory` WASM memory */
+        return module.block(null, [
+            module.call("pop", []),
+            module.local.set(regNameToLocalIndex(instr.op_str), module.global.get("sp", binaryen.i32))
+        ]);
+    },
 };
 
 export default instructions;

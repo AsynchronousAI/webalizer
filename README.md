@@ -51,6 +51,7 @@ console.log(webalizer(buffer, offset).emitText());
 - Support for all x86 registers
 - Functions
 - Static data
+- Use system calls to return, not default
 
 # Errors:
 ## `local.get index must be small enough`
